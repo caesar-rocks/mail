@@ -2,13 +2,9 @@ module github.com/caesar-rocks/mail
 
 go 1.22.2
 
-replace github.com/caesar-rocks/core => ../core
-
-require github.com/joho/godotenv v1.5.1 // indirect
-
 require (
-	github.com/caesar-rocks/core v0.0.0-00010101000000-000000000000
-	github.com/wneessen/go-mail v0.4.1
+	github.com/caesar-rocks/core v0.0.1
+	github.com/xhit/go-simple-mail/v2 v2.16.0
 )
 
 require (
@@ -18,9 +14,10 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.20.0 // indirect
+	github.com/go-test/deep v1.1.0 // indirect
+	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/toorop/go-dkim v0.0.0-20201103131630-e1cd1a0a5208 // indirect
-	github.com/xhit/go-simple-mail/v2 v2.16.0 // indirect
 	go.uber.org/dig v1.17.1 // indirect
 	go.uber.org/fx v1.21.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
