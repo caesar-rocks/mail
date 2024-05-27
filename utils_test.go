@@ -1,7 +1,6 @@
 package mailer
 
 import (
-	"os"
 	"testing"
 )
 
@@ -18,12 +17,12 @@ func TestGetMailer(t *testing.T) {
 			name:       "get smtp",
 			apiService: SMTP,
 			cfg: MailConfig{
-				Host:         os.Getenv("MAIL_HOST"),
-				Port:         os.Getenv("MAIL_PORT"),
-				HostUser:     os.Getenv("MAIL_HOST_USER"),
-				HostPassword: os.Getenv("MAIL_HOST_PASSWORD"),
+				Host:         MailHost,
+				Port:         MailPort,
+				HostUser:     MailHostUser,
+				HostPassword: MailHostPassword,
 				APIService:   SMTP,
-				APIKey:       os.Getenv("MAIL_API_KEY"),
+				APIKey:       MailAPIKey,
 				mailerClient: mockClient,
 			},
 			success: true,
@@ -33,7 +32,7 @@ func TestGetMailer(t *testing.T) {
 			apiService: SENDGRID,
 			cfg: MailConfig{
 				APIService:   SENDGRID,
-				APIKey:       os.Getenv("MAIL_API_KEY"),
+				APIKey:       MailAPIKey,
 				mailerClient: mockClient,
 			},
 			success: true,
@@ -43,7 +42,7 @@ func TestGetMailer(t *testing.T) {
 			apiService: "mailgun",
 			cfg: MailConfig{
 				APIService:   MAILGUN,
-				APIKey:       os.Getenv("MAIL_API_KEY"),
+				APIKey:       MailAPIKey,
 				mailerClient: mockClient,
 			},
 			success: true,
@@ -53,7 +52,7 @@ func TestGetMailer(t *testing.T) {
 			apiService: AMAZON_SES,
 			cfg: MailConfig{
 				APIService:   AMAZON_SES,
-				APIKey:       os.Getenv("MAIL_API_KEY"),
+				APIKey:       MailAPIKey,
 				mailerClient: mockClient,
 			},
 			success: true,
@@ -63,7 +62,7 @@ func TestGetMailer(t *testing.T) {
 			apiService: "unknown",
 			cfg: MailConfig{
 				APIService:   "unknown",
-				APIKey:       os.Getenv("MAIL_API_KEY"),
+				APIKey:       MailAPIKey,
 				mailerClient: nil,
 			},
 			success: false,
@@ -119,26 +118,26 @@ func TestValidateMailerRequiredFields(t *testing.T) {
 		success bool
 	}{
 		{
-			name: "validate smtp",
+			name: "validate smtp with missing username",
 			cfg: MailConfig{
-				Host:         os.Getenv("MAIL_HOST"),
-				Port:         os.Getenv("MAIL_PORT"),
+				Host:         MailHost,
+				Port:         MailPort,
 				HostUser:     "",
-				HostPassword: os.Getenv("MAIL_HOST_PASSWORD"),
+				HostPassword: MailHostPassword,
 				APIService:   SMTP,
-				APIKey:       os.Getenv("MAIL_API_KEY"),
+				APIKey:       MailAPIKey,
 			},
 			success: false,
 		},
 		{
 			name: "validate smtp",
 			cfg: MailConfig{
-				Host:         os.Getenv("MAIL_HOST"),
-				Port:         os.Getenv("MAIL_PORT"),
-				HostUser:     os.Getenv("MAIL_HOST_USER"),
-				HostPassword: os.Getenv("MAIL_HOST_PASSWORD"),
+				Host:         MailHost,
+				Port:         MailPort,
+				HostUser:     MailHostUser,
+				HostPassword: MailHostPassword,
 				APIService:   SMTP,
-				APIKey:       os.Getenv("MAIL_API_KEY"),
+				APIKey:       MailAPIKey,
 			},
 			success: true,
 		},
@@ -154,7 +153,7 @@ func TestValidateMailerRequiredFields(t *testing.T) {
 			name: "validate sendgrid",
 			cfg: MailConfig{
 				APIService: SENDGRID,
-				APIKey:     os.Getenv("MAIL_API_KEY"),
+				APIKey:     MailAPIKey,
 			},
 			success: true,
 		},
@@ -162,7 +161,7 @@ func TestValidateMailerRequiredFields(t *testing.T) {
 			name: "validate mailgun",
 			cfg: MailConfig{
 				APIService: MAILGUN,
-				APIKey:     os.Getenv("MAIL_API_KEY"),
+				APIKey:     MailAPIKey,
 			},
 			success: true,
 		},
@@ -170,7 +169,7 @@ func TestValidateMailerRequiredFields(t *testing.T) {
 			name: "validate amazon_ses",
 			cfg: MailConfig{
 				APIService: AMAZON_SES,
-				APIKey:     os.Getenv("MAIL_API_KEY"),
+				APIKey:     MailAPIKey,
 			},
 			success: true,
 		},

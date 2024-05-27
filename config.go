@@ -1,5 +1,15 @@
 package mailer
 
+const (
+	// mail version
+	version                   = "0.1.0"
+	SMTP       APIServiceType = "smtp"
+	SENDGRID   APIServiceType = "sendgrid"
+	MAILGUN    APIServiceType = "mailgun"
+	AMAZON_SES APIServiceType = "amazon-ses"
+	RESEND     APIServiceType = "resend"
+)
+
 type MailConfigEnv struct {
 	// MAIL_HOST is the host of the mail server.
 	MAIL_HOST string `json:"mail_host,omitempty"`
