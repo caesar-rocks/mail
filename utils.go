@@ -26,6 +26,10 @@ func getMailerClient(cfg MailCfg) MailerClient {
 			Timeout:   cfg.Timeout,
 			useTLS:    cfg.UseTLS,
 		})
+	case RESEND:
+		return newResend(resendParams{
+			apiKey: cfg.APIKey,
+		})
 	case SENDGRID, MAILGUN:
 		return nil
 	case AMAZON_SES:

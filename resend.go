@@ -12,15 +12,13 @@ type resendMailer struct {
 	resendClient *resend.Client
 }
 
-func newResend(params resendParams) Mailer {
+func newResend(params resendParams) MailerClient {
 	client := resend.NewClient(params.apiKey)
 
-	return &resendMailer{
-		resendClient: client,
-	}
+	return &resendMailer{resendClient: client}
 }
 
-func (m *resendMailer) Send(msg MailerMessage) error {
+func (m *resendMailer) Send(msg Mail) error {
 	params := &resend.SendEmailRequest{
 		To:          getSplitEmails(msg.To),
 		From:        msg.From,

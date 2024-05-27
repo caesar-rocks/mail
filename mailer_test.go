@@ -81,6 +81,10 @@ func TestNewMail_SendMail(t *testing.T) {
 			name:       "send email with smtp",
 			apiService: SMTP,
 		},
+		{
+			name:       "send email with resend",
+			apiService: RESEND,
+		},
 	}
 
 	for _, tc := range testCases {
