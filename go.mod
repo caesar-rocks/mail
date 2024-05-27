@@ -4,6 +4,7 @@ go 1.22.2
 
 require (
 	github.com/caesar-rocks/core v0.0.1
+	github.com/resend/resend-go/v2 v2.6.0
 	github.com/xhit/go-simple-mail/v2 v2.16.0
 )
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 )
 
 func getMailerClient(opt MailConfig) Mailer {
@@ -58,4 +59,8 @@ func validateMailerRequiredFields(opt MailConfig) error {
 		return nil
 	}
 	return nil
+}
+
+func getSplitEmails(emails string) []string {
+	return strings.Split(emails, ",")
 }
