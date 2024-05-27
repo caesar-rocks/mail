@@ -62,5 +62,8 @@ func validateMailerRequiredFields(opt MailConfig) error {
 }
 
 func getSplitEmails(emails string) []string {
+	if emails == "" {
+		return []string{}
+	}
 	return strings.Split(emails, ",")
 }

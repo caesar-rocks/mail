@@ -191,3 +191,31 @@ func TestValidateMailerRequiredFields(t *testing.T) {
 		})
 	}
 }
+
+func TestGetSplitEmails(t *testing.T) {
+	testCases := []struct {
+		name     string
+		emails   string
+		expected []string
+	}{
+		{
+			name:     "get split emails - single",
+			emails:   "test1@gmail.com,test2@gmail.com",
+			expected: []string{"test1@gmail.com", "test2@gmail.com"},
+		},
+		{
+			name:     "get split emails - empty",
+			emails:   "",
+			expected: []string{},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			emails := getSplitEmails(tc.emails)
+			if len(emails) != len(tc.expected) {
+				t.Errorf("Expected emails to be %v, got %v", tc.expected, emails)
+			}
+		})
+	}
+}
