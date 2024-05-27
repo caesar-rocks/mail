@@ -31,12 +31,10 @@ func newSMTP(params smtpParams) Mailer {
 	server.Password = params.Password
 	server.Encryption = mail.EncryptionSTARTTLS
 	server.KeepAlive = params.KeepAlive
-
 	server.ConnectTimeout = time.Duration(params.Timeout) * time.Second
-
 	server.SendTimeout = time.Duration(params.Timeout) * time.Second
-
 	server.TLSConfig = &tls.Config{InsecureSkipVerify: params.useTLS}
+	
 	smtpClient, err := server.Connect()
 
 	if err != nil {
@@ -73,14 +71,12 @@ func (m *smtpMailer) Send(msg MailerMessage) error {
 	}
 
 	if email.Error != nil {
-		log.Fatal(email.Error)
+		return email.Error
 	}
 
 	err := email.Send(m.smtpClient)
 	if err != nil {
-		log.Println(err)
-	} else {
-		log.Println("Email Sent")
+		return err
 	}
 	return nil
 }
