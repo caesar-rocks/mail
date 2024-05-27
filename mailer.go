@@ -1,7 +1,6 @@
 package mailer
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/caesar-rocks/core"
@@ -32,7 +31,6 @@ type Mail struct {
 	password     string
 	apiService   APIServiceType
 	apiKey       string
-	msg          MailerMessage
 	emailToSend  chan MailerMessage
 	mailErr      chan error
 	keepAlive    bool
@@ -82,7 +80,6 @@ func NewMailer(opt MailConfig) *Mail {
 			password:     opt.HostPassword,
 			apiService:   opt.APIService,
 			apiKey:       opt.APIKey,
-			msg:          MailerMessage{},
 			keepAlive:    opt.KeepAlive,
 			timeout:      opt.Timeout,
 			emailToSend:  make(chan MailerMessage, 200),
@@ -107,29 +104,9 @@ func (m *Mail) Close() {
 	m.mailerClient.Close()
 }
 
-// sendSMTP sends an email using SMTP.
-func (m *Mail) sendSMTP() error {
-	return m.mailerClient.Send(m.msg)
-}
-
-// sendSendGrid sends an email using SendGrid.
-func (m *Mail) sendSendGrid() error {
-	panic("implement me")
-}
-
-// sendMailGun sends an email using MailGun.
-func (m *Mail) sendMailGun() error {
-	panic("implement me")
-}
-
-// sendResend sends an email using the resend API.
-func (m *Mail) sendResend() error {
-	panic("implement me")
-}
-
-// sendAmazonSES sends an email using Amazon SES.
-func (m *Mail) sendAmazonSES() error {
-	panic("implement me")
+// send sends the email message using the chosen API service.
+func (m *Mail) send(msg MailerMessage) error {
+	return m.mailerClient.Send(msg)
 }
 
 // ListenForEmails listens for email messages and sends them using the chosen API service.
@@ -141,32 +118,8 @@ func (m *Mail) listenForEmails() {
 			if !ok {
 				return
 			}
-			m.setMessage(msg)
-			err := m.chooseAPIService()
+			err := m.send(msg)
 			m.mailErr <- err
 		}
-	}
-}
-
-// setMessage sets the message to be sent.
-func (m *Mail) setMessage(msg MailerMessage) {
-	m.msg = msg
-}
-
-// chooseAPIService chooses the API service to use for sending emails.
-func (m *Mail) chooseAPIService() error {
-	switch m.apiService {
-	case SMTP:
-		return m.sendSMTP()
-	case SENDGRID:
-		return m.sendSendGrid()
-	case MAILGUN:
-		return m.sendMailGun()
-	case RESEND:
-		return m.sendResend()
-	case AMAZON_SES:
-		return m.sendAmazonSES()
-	default:
-		return fmt.Errorf("invalid API service")
 	}
 }
