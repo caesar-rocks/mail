@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func getMailerClient(cfg MailConfig) Mailer {
+func getMailerClient(cfg MailCfg) MailerClient {
 	err := validateMailerRequiredFields(cfg)
 	if err != nil {
 		panic(err)
@@ -45,7 +45,7 @@ func getPort(port string) int {
 	return p
 }
 
-func validateMailerRequiredFields(cfg MailConfig) error {
+func validateMailerRequiredFields(cfg MailCfg) error {
 	switch cfg.APIService {
 	case SMTP:
 		if cfg.Host == "" || cfg.Port == "" || cfg.HostUser == "" || cfg.HostPassword == "" {

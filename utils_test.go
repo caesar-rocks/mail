@@ -10,13 +10,13 @@ func TestGetMailer(t *testing.T) {
 	testCases := []struct {
 		name       string
 		apiService APIServiceType
-		cfg        MailConfig
+		cfg        MailCfg
 		success    bool
 	}{
 		{
 			name:       "get smtp",
 			apiService: SMTP,
-			cfg: MailConfig{
+			cfg: MailCfg{
 				Host:         MailHost,
 				Port:         MailPort,
 				HostUser:     MailHostUser,
@@ -30,7 +30,7 @@ func TestGetMailer(t *testing.T) {
 		{
 			name:       "get sendgrid",
 			apiService: SENDGRID,
-			cfg: MailConfig{
+			cfg: MailCfg{
 				APIService:   SENDGRID,
 				APIKey:       MailAPIKey,
 				mailerClient: mockClient,
@@ -40,7 +40,7 @@ func TestGetMailer(t *testing.T) {
 		{
 			name:       "get mailgun",
 			apiService: "mailgun",
-			cfg: MailConfig{
+			cfg: MailCfg{
 				APIService:   MAILGUN,
 				APIKey:       MailAPIKey,
 				mailerClient: mockClient,
@@ -50,7 +50,7 @@ func TestGetMailer(t *testing.T) {
 		{
 			name:       "get amazon_ses",
 			apiService: AMAZON_SES,
-			cfg: MailConfig{
+			cfg: MailCfg{
 				APIService:   AMAZON_SES,
 				APIKey:       MailAPIKey,
 				mailerClient: mockClient,
@@ -60,7 +60,7 @@ func TestGetMailer(t *testing.T) {
 		{
 			name:       "get unknown",
 			apiService: "unknown",
-			cfg: MailConfig{
+			cfg: MailCfg{
 				APIService:   "unknown",
 				APIKey:       MailAPIKey,
 				mailerClient: nil,
@@ -114,12 +114,12 @@ func TestGetPort(t *testing.T) {
 func TestValidateMailerRequiredFields(t *testing.T) {
 	testCases := []struct {
 		name    string
-		cfg     MailConfig
+		cfg     MailCfg
 		success bool
 	}{
 		{
 			name: "validate smtp with missing username",
-			cfg: MailConfig{
+			cfg: MailCfg{
 				Host:         MailHost,
 				Port:         MailPort,
 				HostUser:     "",
@@ -131,7 +131,7 @@ func TestValidateMailerRequiredFields(t *testing.T) {
 		},
 		{
 			name: "validate smtp",
-			cfg: MailConfig{
+			cfg: MailCfg{
 				Host:         MailHost,
 				Port:         MailPort,
 				HostUser:     MailHostUser,
@@ -143,7 +143,7 @@ func TestValidateMailerRequiredFields(t *testing.T) {
 		},
 		{
 			name: "validate resend",
-			cfg: MailConfig{
+			cfg: MailCfg{
 				APIService: RESEND,
 				APIKey:     "",
 			},
@@ -151,7 +151,7 @@ func TestValidateMailerRequiredFields(t *testing.T) {
 		},
 		{
 			name: "validate sendgrid",
-			cfg: MailConfig{
+			cfg: MailCfg{
 				APIService: SENDGRID,
 				APIKey:     MailAPIKey,
 			},
@@ -159,7 +159,7 @@ func TestValidateMailerRequiredFields(t *testing.T) {
 		},
 		{
 			name: "validate mailgun",
-			cfg: MailConfig{
+			cfg: MailCfg{
 				APIService: MAILGUN,
 				APIKey:     MailAPIKey,
 			},
@@ -167,7 +167,7 @@ func TestValidateMailerRequiredFields(t *testing.T) {
 		},
 		{
 			name: "validate amazon_ses",
-			cfg: MailConfig{
+			cfg: MailCfg{
 				APIService: AMAZON_SES,
 				APIKey:     MailAPIKey,
 			},
