@@ -6,24 +6,24 @@ import (
 	"strconv"
 )
 
-func getMailerClient(opt MailConfig) Mailer {
-	err := validateMailerRequiredFields(opt)
+func getMailerClient(cfg MailConfig) Mailer {
+	err := validateMailerRequiredFields(cfg)
 	if err != nil {
 		panic(err)
 	}
-	if opt.mailerClient != nil {
-		return opt.mailerClient
+	if cfg.mailerClient != nil {
+		return cfg.mailerClient
 	}
-	switch opt.APIService {
+	switch cfg.APIService {
 	case SMTP:
 		return newSMTP(smtpParams{
-			Host:      opt.Host,
-			Port:      opt.Port,
-			Username:  opt.HostUser,
-			Password:  opt.HostPassword,
-			KeepAlive: opt.KeepAlive,
-			Timeout:   opt.Timeout,
-			useTLS:    opt.UseTLS,
+			Host:      cfg.Host,
+			Port:      cfg.Port,
+			Username:  cfg.HostUser,
+			Password:  cfg.HostPassword,
+			KeepAlive: cfg.KeepAlive,
+			Timeout:   cfg.Timeout,
+			useTLS:    cfg.UseTLS,
 		})
 	case SENDGRID, MAILGUN:
 		return nil
@@ -44,14 +44,14 @@ func getPort(port string) int {
 	return p
 }
 
-func validateMailerRequiredFields(opt MailConfig) error {
-	switch opt.APIService {
+func validateMailerRequiredFields(cfg MailConfig) error {
+	switch cfg.APIService {
 	case SMTP:
-		if opt.Host == "" || opt.Port == "" || opt.HostUser == "" || opt.HostPassword == "" {
-			return fmt.Errorf("SMTP configuration is missing")
+		if cfg.Host == "" || cfg.Port == "" || cfg.HostUser == "" || cfg.HostPassword == "" {
+			return fmt.Errorf("missing required fields for SMTP i.e host, port, username, password")
 		}
 	case SENDGRID, MAILGUN, RESEND:
-		if opt.APIKey == "" {
+		if cfg.APIKey == "" {
 			return fmt.Errorf("API key is missing")
 		}
 	case AMAZON_SES:
