@@ -38,6 +38,16 @@ func TestGetMailer(t *testing.T) {
 			success: true,
 		},
 		{
+			name:       "get resend",
+			apiService: RESEND,
+			cfg: MailCfg{
+				APIService:   RESEND,
+				APIKey:       MailAPIKey,
+				mailerClient: mockClient,
+			},
+			success: true,
+		},
+		{
 			name:       "get mailgun",
 			apiService: "mailgun",
 			cfg: MailCfg{
