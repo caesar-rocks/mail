@@ -104,7 +104,7 @@ func TestNewMail_SendMail(t *testing.T) {
 			})
 
 			err := mailer.Send(MailerMessage{
-				To:      "patrickckabwe@gmail.com",
+				To:      "test@example.com",
 				Subject: "Test",
 				Html:    "<h1>Test</h1>",
 				Text:    "Test",
