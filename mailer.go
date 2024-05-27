@@ -2,8 +2,49 @@ package mailer
 
 type APIServiceType string
 
-// MailConfig is a struct that holds the configuration for the mailer.
-type MailConfig struct {
+const (
+	SMTP       APIServiceType = "smtp"
+	SENDGRID   APIServiceType = "sendgrid"
+	MAILGUN    APIServiceType = "mailgun"
+	AMAZON_SES APIServiceType = "amazon-ses"
+	RESEND     APIServiceType = "resend"
+)
+
+type Attachment struct {
+	// Name is the name of the attachment.
+	Name string
+	// Path is the path to the attachment.
+	Path string
+}
+
+type Mail struct {
+	// To is the email address of the recipient.
+	To string
+	// From is the email address of the sender. defaults to the host user.
+	From string
+	// Html is the html content of the email.
+	Html string
+	// Text is the text content of the email.
+	Text string
+	// Subject is the subject of the email.
+	Subject string
+	// Cc is the email address of the cc recipient.
+	Cc string
+	// Bcc is the email address of the bcc recipient.
+	Bcc string
+	// ReplyTo is the email address to reply to.
+	ReplyTo string
+	// Attachments is an array of attachments.
+	Attachments []Attachment
+}
+
+type MailerClient interface {
+	Send(msg Mail) error
+	Close()
+}
+
+// MailCfg is a struct that holds the configuration for the mailer.
+type MailCfg struct {
 	// FromName is the name that will be used as the sender.
 	FromName string
 	// ReplyToEmail is the name that will be used as the sender.
@@ -29,27 +70,27 @@ type MailConfig struct {
 	// KeepAlive to keep alive connection
 	KeepAlive bool
 	// MailerClient is the mailer client to use for sending emails.
-	mailerClient Mailer
+	mailerClient MailerClient
 }
 
-// Mail is a struct that holds the mailer instance and its configurations
-type Mail struct {
+// Mailer is a struct that holds the mailer instance and its configurations
+type Mailer struct {
 	host         string
 	port         string
 	username     string
 	password     string
 	apiService   APIServiceType
 	apiKey       string
-	emailToSend  chan MailerMessage
+	emailToSend  chan Mail
 	mailErr      chan error
 	keepAlive    bool
 	timeout      int
-	mailerClient Mailer
+	mailerClient MailerClient
 }
 
 // NewMailer creates a new mailer instance.
-func NewMailer(cfg MailConfig) *Mail {
-	mailer := &Mail{
+func NewMailer(cfg MailCfg) *Mailer {
+	mailer := &Mailer{
 		host:         cfg.Host,
 		port:         cfg.Port,
 		username:     cfg.HostUser,
@@ -58,45 +99,39 @@ func NewMailer(cfg MailConfig) *Mail {
 		apiKey:       cfg.APIKey,
 		keepAlive:    cfg.KeepAlive,
 		timeout:      cfg.Timeout,
-		emailToSend:  make(chan MailerMessage, 200),
+		emailToSend:  make(chan Mail, 200),
 		mailErr:      make(chan error),
 		mailerClient: getMailerClient(cfg),
 	}
 
-	go mailer.listenForEmails()
+	go mailer.listenForEmailsToBeSent()
 
 	return mailer
 }
 
 // Send sends an email message using the chosen API service.
-func (m *Mail) Send(msg MailerMessage) error {
+func (m *Mailer) Send(msg Mail) error {
 	m.emailToSend <- msg
 	return <-m.mailErr
 }
 
 // Close closes the emailToSend, result channels and the mailerClient.
-func (m *Mail) Close() {
+func (m *Mailer) Close() {
 	close(m.emailToSend)
 	close(m.mailErr)
 	m.mailerClient.Close()
 }
 
 // sendSMTP sends an email using SMTP.
-func (m *Mail) send(msg MailerMessage) error {
+func (m *Mailer) send(msg Mail) error {
 	return m.mailerClient.Send(msg)
 }
 
-// ListenForEmails listens for email messages and sends them using the chosen API service.
+// ListenForEmailsToBeSent listens for email messages and sends them using the chosen API service.
 // It is a blocking function that should be run in a goroutine.
-func (m *Mail) listenForEmails() {
-	for {
-		select {
-		case msg, ok := <-m.emailToSend:
-			if !ok {
-				return
-			}
-			err := m.send(msg)
-			m.mailErr <- err
-		}
+func (m *Mailer) listenForEmailsToBeSent() {
+	for msg := range m.emailToSend {
+		err := m.send(msg)
+		m.mailErr <- err
 	}
 }

@@ -22,7 +22,7 @@ type smtpMailer struct {
 	smtpClient *mail.SMTPClient
 }
 
-func newSMTP(params smtpParams) Mailer {
+func newSMTP(params smtpParams) MailerClient {
 	server := mail.NewSMTPClient()
 
 	server.Host = params.Host
@@ -43,7 +43,7 @@ func newSMTP(params smtpParams) Mailer {
 	return &smtpMailer{smtpClient: smtpClient}
 }
 
-func (m *smtpMailer) Send(msg MailerMessage) error {
+func (m *smtpMailer) Send(msg Mail) error {
 	email := mail.NewMSG()
 	email.SetFrom(msg.From).
 		AddTo(msg.To).

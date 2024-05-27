@@ -19,12 +19,12 @@ func TestMail_NewMail(t *testing.T) {
 	testCases := []struct {
 		name    string
 		success bool
-		cfg     MailConfig
+		cfg     MailCfg
 	}{
 		{
 			name:    "Should create new instance of new mailer with smtp fields",
 			success: true,
-			cfg: MailConfig{
+			cfg: MailCfg{
 				Host:         MailHost,
 				Port:         MailPort,
 				HostUser:     MailHostUser,
@@ -37,7 +37,7 @@ func TestMail_NewMail(t *testing.T) {
 		{
 			name:    "Should not create new instance of new mailer with missing fields",
 			success: false,
-			cfg: MailConfig{
+			cfg: MailCfg{
 				Host:         MailHost,
 				Port:         MailPort,
 				HostUser:     MailHostUser,
@@ -86,7 +86,7 @@ func TestNewMail_SendMail(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 
-			mailer := NewMailer(MailConfig{
+			mailer := NewMailer(MailCfg{
 				Host:         MailHost,
 				Port:         MailPort,
 				HostUser:     MailHostUser,
@@ -96,7 +96,7 @@ func TestNewMail_SendMail(t *testing.T) {
 				mailerClient: mockClient,
 			})
 
-			err := mailer.Send(MailerMessage{
+			err := mailer.Send(Mail{
 				To:      "test@example.com",
 				Subject: "Test",
 				Html:    "<h1>Test</h1>",
@@ -114,7 +114,7 @@ func TestNewMail_SendMail(t *testing.T) {
 type mockMailerClient struct {
 }
 
-func (m *mockMailerClient) Send(msg MailerMessage) error {
+func (m *mockMailerClient) Send(msg Mail) error {
 	return nil
 }
 
