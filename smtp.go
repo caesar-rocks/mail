@@ -34,7 +34,7 @@ func newSMTP(params smtpParams) Mailer {
 	server.ConnectTimeout = time.Duration(params.Timeout) * time.Second
 	server.SendTimeout = time.Duration(params.Timeout) * time.Second
 	server.TLSConfig = &tls.Config{InsecureSkipVerify: params.useTLS}
-	
+
 	smtpClient, err := server.Connect()
 
 	if err != nil {
