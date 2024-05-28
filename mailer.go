@@ -67,6 +67,10 @@ type MailCfg struct {
 	APIService APIServiceType
 	// APIKey is the key to use for sending emails.
 	APIKey string
+	// APISecret is the secret to use for sending emails.
+	APISecret string
+	// Region is the region to use for sending emails.
+	Region string
 	// KeepAlive to keep alive connection
 	KeepAlive bool
 	// MailerClient is the mailer client to use for sending emails.

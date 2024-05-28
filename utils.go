@@ -28,7 +28,13 @@ func getMailerClient(cfg MailCfg) MailerClient {
 	case SENDGRID, MAILGUN:
 		return nil
 	case AMAZON_SES:
-		return nil
+		return newSES(
+			sesParams{
+				Region: cfg.Region,
+				Key:    cfg.APIKey,
+				Secret: cfg.APISecret,
+			},
+		)
 	default:
 		panic("invalid API service")
 	}
