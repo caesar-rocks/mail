@@ -95,7 +95,6 @@ func TestAWSSes_Send(t *testing.T) {
 	}
 }
 
-
 type mockSESClient struct {
 	SendEmailFunc func(ctx context.Context, input *sesv2.SendEmailInput) (*sesv2.SendEmailOutput, error)
 }

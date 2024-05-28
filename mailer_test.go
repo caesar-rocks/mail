@@ -11,8 +11,8 @@ const (
 	MailHostPassword = "testpassword"
 	MailAPIService   = "smtp"
 	MailAPIKey       = "testapikey"
-	MailAPISecret	= "testapisecret"
-	MailRegion		= "us-west-2"
+	MailAPISecret    = "testapisecret"
+	MailRegion       = "us-west-2"
 )
 
 func TestMail_NewMail(t *testing.T) {

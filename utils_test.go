@@ -257,8 +257,8 @@ func TestAWSSes_buildMessage(t *testing.T) {
 				Html:    "<p>test</p>",
 				Text:    "test",
 				ReplyTo: "info@test.com",
-				Cc: "info@test.com,info@test.com",
-				Bcc: "info@test.com,info@test.com",
+				Cc:      "info@test.com,info@test.com",
+				Bcc:     "info@test.com,info@test.com",
 				Attachments: []Attachment{
 					{
 						Name: "test",
