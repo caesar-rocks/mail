@@ -1,6 +1,7 @@
 package mailer
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -63,6 +64,8 @@ func TestGetMailer(t *testing.T) {
 			cfg: MailCfg{
 				APIService:   AMAZON_SES,
 				APIKey:       MailAPIKey,
+				APISecret:    MailAPISecret,
+				Region:       MailRegion,
 				mailerClient: mockClient,
 			},
 			success: true,
@@ -180,8 +183,19 @@ func TestValidateMailerRequiredFields(t *testing.T) {
 			cfg: MailCfg{
 				APIService: AMAZON_SES,
 				APIKey:     MailAPIKey,
+				APISecret:  MailAPISecret,
+				Region:     MailRegion,
 			},
 			success: true,
+		},
+		{
+			name: "validate amazon_ses with missing region",
+			cfg: MailCfg{
+				APIService: AMAZON_SES,
+				APIKey:     MailAPIKey,
+				Region:     MailRegion,
+			},
+			success: false,
 		},
 	}
 
@@ -227,4 +241,44 @@ func TestGetSplitEmails(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestAWSSes_buildMessage(t *testing.T) {
+	testCases := []struct {
+		name    string
+		payload Mail
+	}{
+		{
+			name: "Should send email successfully",
+			payload: Mail{
+				Subject: "test",
+				From:    "info@test.com",
+				To:      "test@gmail.com",
+				Html:    "<p>test</p>",
+				Text:    "test",
+				ReplyTo: "info@test.com",
+				Cc: "info@test.com,info@test.com",
+				Bcc: "info@test.com,info@test.com",
+				Attachments: []Attachment{
+					{
+						Name: "test",
+						Path: "test",
+					},
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			msg, _ := buildMessage(tc.payload)
+			fmt.Print(msg)
+			if msg == "" {
+				t.Errorf("Expected message to be created, got empty")
+			} else {
+				t.Logf("Message created successfully")
+			}
+		})
+	}
+
 }

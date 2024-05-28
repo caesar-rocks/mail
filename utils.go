@@ -5,6 +5,8 @@ import (
 	"log"
 	"strconv"
 	"strings"
+
+	mail "github.com/xhit/go-simple-mail/v2"
 )
 
 func getMailerClient(cfg MailCfg) MailerClient {
@@ -66,7 +68,9 @@ func validateMailerRequiredFields(cfg MailCfg) error {
 			return fmt.Errorf("API key is missing")
 		}
 	case AMAZON_SES:
-		return nil
+		if cfg.APIKey == "" || cfg.APISecret == "" || cfg.Region == "" {
+			return fmt.Errorf("missing required fields for Amazon SES i.e region, key, secret")
+		}
 	}
 	return nil
 }
@@ -76,4 +80,41 @@ func getSplitEmails(emails string) []string {
 		return []string{}
 	}
 	return strings.Split(emails, ",")
+}
+
+func buildMessage(msg Mail) (string, *mail.Email) {
+	email := mail.NewMSG()
+	email.SetFrom(msg.From).
+		AddTo(msg.To).
+		SetSubject(msg.Subject)
+
+	if msg.Text != "" {
+		email.SetBody(mail.TextPlain, msg.Text)
+	}
+
+	if msg.Html != "" {
+		email.AddAlternative(mail.TextHTML, msg.Html)
+	}
+
+	if msg.ReplyTo != "" {
+		email.SetReplyTo(msg.ReplyTo)
+	}
+	if msg.Cc != "" {
+		email.AddCc(msg.Cc)
+	}
+	if msg.Bcc != "" {
+		email.AddBcc(msg.Bcc)
+	}
+
+	if len(msg.Attachments) > 0 {
+		for _, attachment := range msg.Attachments {
+			email.Attach(&mail.File{
+				FilePath: attachment.Path,
+				Name:     attachment.Name,
+				Inline:   true,
+			})
+		}
+	}
+
+	return email.GetMessage(), email
 }
