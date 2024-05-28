@@ -32,7 +32,11 @@ func getMailerClient(cfg MailCfg) MailerClient {
 		return newResend(resendParams{
 			apiKey: cfg.APIKey,
 		})
-	case SENDGRID, MAILGUN:
+	case SENDGRID:
+		return newSendgrid(sendGridParams{
+			apiKey: cfg.APIKey,
+		})
+	case MAILGUN:
 		return nil
 	case AMAZON_SES:
 		return newSES(
