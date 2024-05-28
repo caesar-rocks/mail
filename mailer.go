@@ -126,7 +126,7 @@ func (m *Mailer) Close() {
 	m.mailerClient.Close()
 }
 
-// sendSMTP sends an email using SMTP.
+// send sends the email message using the chosen API service.
 func (m *Mailer) send(msg Mail) error {
 	return m.mailerClient.Send(msg)
 }

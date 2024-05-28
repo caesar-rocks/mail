@@ -7,6 +7,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.27.16
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.16
 	github.com/aws/aws-sdk-go-v2/service/sesv2 v1.29.4
+	github.com/resend/resend-go/v2 v2.6.0
 	github.com/xhit/go-simple-mail/v2 v2.16.0
 )
 

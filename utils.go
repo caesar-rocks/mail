@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 )
 
 func getMailerClient(cfg MailCfg) MailerClient {
@@ -24,6 +25,10 @@ func getMailerClient(cfg MailCfg) MailerClient {
 			KeepAlive: cfg.KeepAlive,
 			Timeout:   cfg.Timeout,
 			useTLS:    cfg.UseTLS,
+		})
+	case RESEND:
+		return newResend(resendParams{
+			apiKey: cfg.APIKey,
 		})
 	case SENDGRID, MAILGUN:
 		return nil
@@ -64,4 +69,11 @@ func validateMailerRequiredFields(cfg MailCfg) error {
 		return nil
 	}
 	return nil
+}
+
+func getSplitEmails(emails string) []string {
+	if emails == "" {
+		return []string{}
+	}
+	return strings.Split(emails, ",")
 }
