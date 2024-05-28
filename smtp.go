@@ -44,31 +44,7 @@ func newSMTP(params smtpParams) MailerClient {
 }
 
 func (m *smtpMailer) Send(msg Mail) error {
-	email := mail.NewMSG()
-	email.SetFrom(msg.From).
-		AddTo(msg.To).
-		AddBcc(msg.Cc).
-		AddCc(msg.Bcc).
-		SetSubject(msg.Subject).
-		SetReplyTo(msg.ReplyTo)
-
-	if msg.Html != "" {
-		email.SetBody(mail.TextHTML, msg.Html)
-	}
-
-	if msg.Text != "" && msg.Html != "" {
-		email.AddAlternative(mail.TextPlain, msg.Text)
-	}
-
-	if len(msg.Attachments) > 0 {
-		for _, attachment := range msg.Attachments {
-			email.Attach(&mail.File{
-				FilePath: attachment.Path,
-				Name:     attachment.Name,
-				Inline:   true,
-			})
-		}
-	}
+	_, email := buildMessage(msg)
 
 	if email.Error != nil {
 		return email.Error
