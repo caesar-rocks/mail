@@ -23,7 +23,6 @@ type sesParams struct {
 
 type sesMailer struct {
 	sesClient *sesv2.Client
-	ctx       context.Context
 }
 
 func newSES(params sesParams) MailerClient {
@@ -48,26 +47,28 @@ func (m *sesMailer) Send(msg Mail) error {
 			Simple: &types.Message{
 				Body: &types.Body{
 					Html: &types.Content{
-						Data:    &msg.Html,
+						Data:   aws.String(msg.Html),
 						Charset: CharsetUtf8,
 					},
 					Text: &types.Content{
-						Data:    &msg.Text,
+						Data:   aws.String(msg.Text),
 						Charset: CharsetUtf8,
 					},
 				},
 				Subject: &types.Content{
-					Data:    &msg.Subject,
+					Data:    aws.String(msg.Subject),
 					Charset: CharsetUtf8,
 				},
 			},
 		},
-		Destination:      &types.Destination{},
-		FromEmailAddress: &msg.From,
+		Destination:      &types.Destination{
+			ToAddresses: []string{msg.To},
+		},
+		FromEmailAddress: aws.String(msg.From),
 		ReplyToAddresses: []string{msg.ReplyTo},
 	}
 
-	_, err := m.sesClient.SendEmail(m.ctx, mailInput)
+	_, err := m.sesClient.SendEmail(context.TODO(), mailInput)
 
 	if err != nil {
 		return err
