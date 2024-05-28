@@ -15,6 +15,10 @@ var (
 	CharsetUtf8 = aws.String("UTF-8")
 )
 
+type sesMailerClient interface {
+	SendEmail(ctx context.Context, params *sesv2.SendEmailInput, optFns ...func(*sesv2.Options)) (*sesv2.SendEmailOutput, error)
+}
+
 type sesParams struct {
 	Region string
 	Key    string
@@ -22,7 +26,7 @@ type sesParams struct {
 }
 
 type sesMailer struct {
-	sesClient *sesv2.Client
+	sesClient sesMailerClient
 }
 
 func newSES(params sesParams) MailerClient {
@@ -42,30 +46,13 @@ func newSES(params sesParams) MailerClient {
 }
 
 func (m *sesMailer) Send(msg Mail) error {
+	message, _ := buildMessage(msg)
 	mailInput := &sesv2.SendEmailInput{
 		Content: &types.EmailContent{
-			Simple: &types.Message{
-				Body: &types.Body{
-					Html: &types.Content{
-						Data:   aws.String(msg.Html),
-						Charset: CharsetUtf8,
-					},
-					Text: &types.Content{
-						Data:   aws.String(msg.Text),
-						Charset: CharsetUtf8,
-					},
-				},
-				Subject: &types.Content{
-					Data:    aws.String(msg.Subject),
-					Charset: CharsetUtf8,
-				},
+			Raw: &types.RawMessage{
+				Data: []byte(message),
 			},
 		},
-		Destination:      &types.Destination{
-			ToAddresses: []string{msg.To},
-		},
-		FromEmailAddress: aws.String(msg.From),
-		ReplyToAddresses: []string{msg.ReplyTo},
 	}
 
 	_, err := m.sesClient.SendEmail(context.TODO(), mailInput)
@@ -78,5 +65,5 @@ func (m *sesMailer) Send(msg Mail) error {
 }
 
 func (m *sesMailer) Close() {
-
+	// No need to close the connection
 }
