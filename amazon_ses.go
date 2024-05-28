@@ -16,9 +16,9 @@ var (
 )
 
 type sesParams struct {
-	Region  string
-	Key     string
-	Secret  string
+	Region string
+	Key    string
+	Secret string
 }
 
 type sesMailer struct {
