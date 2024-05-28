@@ -1,7 +1,6 @@
 package mailer
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -272,7 +271,6 @@ func TestAWSSes_buildMessage(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			msg, _ := buildMessage(tc.payload)
-			fmt.Print(msg)
 			if msg == "" {
 				t.Errorf("Expected message to be created, got empty")
 			} else {

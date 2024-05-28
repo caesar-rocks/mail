@@ -8,6 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.16
 	github.com/aws/aws-sdk-go-v2/service/sesv2 v1.29.4
 	github.com/resend/resend-go/v2 v2.6.0
+	github.com/sendgrid/sendgrid-go v3.14.0+incompatible
 	github.com/xhit/go-simple-mail/v2 v2.16.0
 )
 
@@ -23,6 +24,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sts v1.28.10 // indirect
 	github.com/aws/smithy-go v1.20.2 // indirect
 	github.com/go-test/deep v1.1.0 // indirect
+	github.com/sendgrid/rest v2.6.9+incompatible // indirect
 	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/toorop/go-dkim v0.0.0-20201103131630-e1cd1a0a5208 // indirect
+	golang.org/x/net v0.25.0 // indirect
 )
