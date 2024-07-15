@@ -40,7 +40,7 @@ func validateMailerRequiredFields(cfg MailCfg) error {
 			return fmt.Errorf("missing required fields for SMTP i.e password")
 		}
 	case RESEND:
-		if cfg.Resend.apiKey == "" {
+		if cfg.Resend.APIKey == "" {
 			return fmt.Errorf("API key is missing")
 		}
 	case AMAZON_SES:
