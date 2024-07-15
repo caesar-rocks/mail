@@ -9,16 +9,14 @@ import (
 )
 
 type SMTPCfg struct {
-	Username  string
-	Password  string
-	Host      string
-	Port      string
-	KeepAlive bool
-	Timeout   int
-	UseTLS    bool
-
-	// By default, the encryption is set to SSL/TLS.
-	Encryption *mail.Encryption
+	Username   string
+	Password   string
+	Host       string
+	Port       string
+	KeepAlive  bool
+	Timeout    int
+	UseTLS     bool
+	Encryption mail.Encryption
 }
 
 type smtpMailer struct {
@@ -36,11 +34,7 @@ func newSMTP(cfg SMTPCfg) (MailerClient, error) {
 	server.Port = port
 	server.Username = cfg.Username
 	server.Password = cfg.Password
-	if cfg.Encryption != nil {
-		server.Encryption = *cfg.Encryption
-	} else {
-		server.Encryption = mail.EncryptionSSLTLS
-	}
+	server.Encryption = cfg.Encryption
 	server.KeepAlive = cfg.KeepAlive
 	server.ConnectTimeout = time.Duration(cfg.Timeout) * time.Second
 	server.SendTimeout = time.Duration(cfg.Timeout) * time.Second
