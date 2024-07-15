@@ -5,7 +5,7 @@ import (
 )
 
 type ResendCfg struct {
-	apiKey string
+	APIKey string
 }
 
 type resendMailer struct {
@@ -13,7 +13,7 @@ type resendMailer struct {
 }
 
 func newResend(params ResendCfg) MailerClient {
-	client := resend.NewClient(params.apiKey)
+	client := resend.NewClient(params.APIKey)
 
 	return &resendMailer{resendClient: client}
 }
