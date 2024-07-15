@@ -4,8 +4,6 @@ type APIServiceType string
 
 const (
 	SMTP       APIServiceType = "smtp"
-	SENDGRID   APIServiceType = "sendgrid"
-	MAILGUN    APIServiceType = "mailgun"
 	AMAZON_SES APIServiceType = "amazon-ses"
 	RESEND     APIServiceType = "resend"
 )
@@ -45,72 +43,42 @@ type MailerClient interface {
 
 // MailCfg is a struct that holds the configuration for the mailer.
 type MailCfg struct {
-	// FromName is the name that will be used as the sender.
-	FromName string
-	// ReplyToEmail is the name that will be used as the sender.
-	ReplyToEmail string
-	// Host is the host of the mail server.
-	Host string
-	// HostUser is the username for the mail server.
-	HostUser string
-	// HostPassword is the password for the mail server.
-	HostPassword string
-	// Port is the port of the mail server.
-	Port string
-	// UseTLS is a boolean that determines whether to use TLS.
-	UseTLS bool
-	// UseSSL is a boolean that determines whether to use SSL.
-	UseSSL bool
-	// Timeout is the timeout to connect to SMTP Server and to send the email and wait respond
-	Timeout int
+	// The configuration for the SMTP server.
+	SMTP SMTPCfg
+
+	// The configuration for the Amazon SES service.
+	SES SESCfg
+
+	// The configuration for the Resend service.
+	Resend ResendCfg
+
 	// APIService is the service to use for sending emails.
 	APIService APIServiceType
-	// APIKey is the key to use for sending emails.
-	APIKey string
-	// APISecret is the secret to use for sending emails.
-	APISecret string
-	// Region is the region to use for sending emails.
-	Region string
-	// KeepAlive to keep alive connection
-	KeepAlive bool
-	// MailerClient is the mailer client to use for sending emails.
-	mailerClient MailerClient
 }
 
 // Mailer is a struct that holds the mailer instance and its configurations
 type Mailer struct {
-	host         string
-	port         string
-	username     string
-	password     string
-	apiService   APIServiceType
-	apiKey       string
 	emailToSend  chan Mail
 	mailErr      chan error
-	keepAlive    bool
-	timeout      int
 	mailerClient MailerClient
 }
 
 // NewMailer creates a new mailer instance.
-func NewMailer(cfg MailCfg) *Mailer {
+func NewMailer(cfg MailCfg) (*Mailer, error) {
+	mailerClient, err := getMailerClient(cfg)
+	if err != nil {
+		return nil, err
+	}
+
 	mailer := &Mailer{
-		host:         cfg.Host,
-		port:         cfg.Port,
-		username:     cfg.HostUser,
-		password:     cfg.HostPassword,
-		apiService:   cfg.APIService,
-		apiKey:       cfg.APIKey,
-		keepAlive:    cfg.KeepAlive,
-		timeout:      cfg.Timeout,
 		emailToSend:  make(chan Mail, 200),
 		mailErr:      make(chan error),
-		mailerClient: getMailerClient(cfg),
+		mailerClient: mailerClient,
 	}
 
 	go mailer.listenForEmailsToBeSent()
 
-	return mailer
+	return mailer, nil
 }
 
 // Send sends an email message using the chosen API service.

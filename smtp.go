@@ -2,45 +2,53 @@ package mailer
 
 import (
 	"crypto/tls"
-	"log"
+	"strconv"
 	"time"
 
 	mail "github.com/xhit/go-simple-mail/v2"
 )
 
-type smtpParams struct {
+type SMTPCfg struct {
 	Username  string
 	Password  string
 	Host      string
 	Port      string
 	KeepAlive bool
 	Timeout   int
-	useTLS    bool
+	UseTLS    bool
+
+	// By default, the encryption is set to SSL/TLS.
+	Encryption *mail.Encryption
 }
 
 type smtpMailer struct {
 	smtpClient *mail.SMTPClient
 }
 
-func newSMTP(params smtpParams) MailerClient {
+func newSMTP(cfg SMTPCfg) (MailerClient, error) {
 	server := mail.NewSMTPClient()
 
-	server.Host = params.Host
-	server.Port = getPort(params.Port)
-	server.Username = params.Username
-	server.Password = params.Password
+	server.Host = cfg.Host
+	port, err := strconv.Atoi(cfg.Port)
+	if err != nil {
+		return nil, err
+	}
+	server.Port = port
+	server.Username = cfg.Username
+	server.Password = cfg.Password
 	server.Encryption = mail.EncryptionSTARTTLS
-	server.KeepAlive = params.KeepAlive
-	server.ConnectTimeout = time.Duration(params.Timeout) * time.Second
-	server.SendTimeout = time.Duration(params.Timeout) * time.Second
-	server.TLSConfig = &tls.Config{InsecureSkipVerify: params.useTLS}
+	server.KeepAlive = cfg.KeepAlive
+	server.ConnectTimeout = time.Duration(cfg.Timeout) * time.Second
+	server.SendTimeout = time.Duration(cfg.Timeout) * time.Second
+	server.TLSConfig = &tls.Config{InsecureSkipVerify: cfg.UseTLS}
 
 	smtpClient, err := server.Connect()
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	return &smtpMailer{smtpClient: smtpClient}
+
+	return &smtpMailer{smtpClient: smtpClient}, nil
 }
 
 func (m *smtpMailer) Send(msg Mail) error {
