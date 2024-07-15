@@ -36,7 +36,11 @@ func newSMTP(cfg SMTPCfg) (MailerClient, error) {
 	server.Port = port
 	server.Username = cfg.Username
 	server.Password = cfg.Password
-	server.Encryption = mail.EncryptionSTARTTLS
+	if cfg.Encryption != nil {
+		server.Encryption = *cfg.Encryption
+	} else {
+		server.Encryption = mail.EncryptionSSLTLS
+	}
 	server.KeepAlive = cfg.KeepAlive
 	server.ConnectTimeout = time.Duration(cfg.Timeout) * time.Second
 	server.SendTimeout = time.Duration(cfg.Timeout) * time.Second
