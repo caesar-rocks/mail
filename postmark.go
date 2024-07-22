@@ -42,7 +42,7 @@ func (m *postmarkMailer) Send(msg Mail) error {
 	}
 	var attachments []postAttachment
 	for _, attachment := range msg.Attachments {
-		base64Content, err := getBase64Content(attachment.Path)
+		base64Content, err := generateBase64Content(attachment.Path)
 		if err != nil {
 			return newMailerError("Postmark", 500, map[string]interface{}{
 				"error": "Error getting base64 content",

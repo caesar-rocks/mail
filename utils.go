@@ -167,7 +167,7 @@ func checkResponse(res *http.Response) error {
 	return nil
 }
 
-func getBase64Content(path string) (string, error) {
+func generateBase64Content(path string) (string, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return "", err
