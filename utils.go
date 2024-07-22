@@ -1,7 +1,14 @@
 package mailer
 
 import (
+	"bytes"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"os"
 	"strings"
 
 	mail "github.com/xhit/go-simple-mail/v2"
@@ -19,6 +26,8 @@ func getMailerClient(cfg MailCfg) (MailerClient, error) {
 		return newResend(cfg.Resend), nil
 	case AMAZON_SES:
 		return newSES(cfg.SES)
+	case POSTMARK:
+		return newPostmark(cfg.Postmark), nil
 	default:
 		return nil, fmt.Errorf("invalid API service")
 	}
@@ -99,4 +108,75 @@ func buildMessage(msg Mail) (string, *mail.Email) {
 	}
 
 	return email.GetMessage(), email
+}
+
+func makeApiCall(endpoint string, headers map[string]string, body map[string]any, httpClient *http.Client) error {
+	prepareBody, err := prepareBody(body)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("POST", endpoint, prepareBody)
+	if err != nil {
+		return err
+	}
+
+	for key, value := range headers {
+		req.Header.Set(key, value)
+	}
+
+	res, err := httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		err := res.Body.Close()
+		if err != nil {
+			log.Println("Error closing response body:", err)
+		}
+	}()
+
+	err = checkResponse(res)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func prepareBody(body map[string]any) (io.Reader, error) {
+	jsonBytes, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	return bytes.NewBuffer(jsonBytes), nil
+}
+
+func checkResponse(res *http.Response) error {
+	if res.StatusCode >= 400 {
+		metaDecoder := json.NewDecoder(res.Body)
+		var meta map[string]interface{}
+		err := metaDecoder.Decode(&meta)
+		if err != nil {
+			return err
+		}
+		return newMailerError("Mailer API", res.StatusCode, meta)
+	}
+	return nil
+}
+
+func generateBase64Content(path string) (string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	data, err := io.ReadAll(file)
+	if err != nil {
+		return "", err
+	}
+	return base64.StdEncoding.EncodeToString(data), err
 }
