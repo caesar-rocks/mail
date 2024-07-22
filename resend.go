@@ -4,16 +4,16 @@ import (
 	"github.com/resend/resend-go/v2"
 )
 
-type resendParams struct {
-	apiKey string
+type ResendCfg struct {
+	APIKey string
 }
 
 type resendMailer struct {
 	resendClient *resend.Client
 }
 
-func newResend(params resendParams) MailerClient {
-	client := resend.NewClient(params.apiKey)
+func newResend(params ResendCfg) MailerClient {
+	client := resend.NewClient(params.APIKey)
 
 	return &resendMailer{resendClient: client}
 }

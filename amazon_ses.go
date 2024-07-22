@@ -2,7 +2,6 @@ package mailer
 
 import (
 	"context"
-	"log"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -19,7 +18,7 @@ type sesMailerClient interface {
 	SendEmail(ctx context.Context, params *sesv2.SendEmailInput, optFns ...func(*sesv2.Options)) (*sesv2.SendEmailOutput, error)
 }
 
-type sesParams struct {
+type SESCfg struct {
 	Region string
 	Key    string
 	Secret string
@@ -29,7 +28,7 @@ type sesMailer struct {
 	sesClient sesMailerClient
 }
 
-func newSES(params sesParams) MailerClient {
+func newSES(params SESCfg) (MailerClient, error) {
 	creds := credentials.NewStaticCredentialsProvider(params.Key, params.Secret, "")
 	cfg, err := config.LoadDefaultConfig(
 		context.Background(),
@@ -37,12 +36,12 @@ func newSES(params sesParams) MailerClient {
 		config.WithCredentialsProvider(creds),
 	)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	client := sesv2.NewFromConfig(cfg)
 
-	return &sesMailer{sesClient: client}
+	return &sesMailer{sesClient: client}, nil
 }
 
 func (m *sesMailer) Send(msg Mail) error {

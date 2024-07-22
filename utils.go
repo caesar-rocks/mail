@@ -2,78 +2,56 @@ package mailer
 
 import (
 	"fmt"
-	"log"
-	"strconv"
 	"strings"
 
 	mail "github.com/xhit/go-simple-mail/v2"
 )
 
-func getMailerClient(cfg MailCfg) MailerClient {
-	err := validateMailerRequiredFields(cfg)
-	if err != nil {
-		panic(err)
+func getMailerClient(cfg MailCfg) (MailerClient, error) {
+	if err := validateMailerRequiredFields(cfg); err != nil {
+		return nil, err
 	}
-	if cfg.mailerClient != nil {
-		return cfg.mailerClient
-	}
+
 	switch cfg.APIService {
 	case SMTP:
-		return newSMTP(smtpParams{
-			Host:      cfg.Host,
-			Port:      cfg.Port,
-			Username:  cfg.HostUser,
-			Password:  cfg.HostPassword,
-			KeepAlive: cfg.KeepAlive,
-			Timeout:   cfg.Timeout,
-			useTLS:    cfg.UseTLS,
-		})
+		return newSMTP(cfg.SMTP)
 	case RESEND:
-		return newResend(resendParams{
-			apiKey: cfg.APIKey,
-		})
-	case SENDGRID:
-		return newSendgrid(sendGridParams{
-			apiKey: cfg.APIKey,
-		})
-	case MAILGUN:
-		return nil
+		return newResend(cfg.Resend), nil
 	case AMAZON_SES:
-		return newSES(
-			sesParams{
-				Region: cfg.Region,
-				Key:    cfg.APIKey,
-				Secret: cfg.APISecret,
-			},
-		)
+		return newSES(cfg.SES)
 	default:
-		panic("invalid API service")
+		return nil, fmt.Errorf("invalid API service")
 	}
-}
-
-func getPort(port string) int {
-	p, err := strconv.Atoi(port)
-
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	return p
 }
 
 func validateMailerRequiredFields(cfg MailCfg) error {
 	switch cfg.APIService {
 	case SMTP:
-		if cfg.Host == "" || cfg.Port == "" || cfg.HostUser == "" || cfg.HostPassword == "" {
-			return fmt.Errorf("missing required fields for SMTP i.e host, port, username, password")
+		if cfg.SMTP.Host == "" {
+			return fmt.Errorf("missing required fields for SMTP i.e host")
 		}
-	case SENDGRID, MAILGUN, RESEND:
-		if cfg.APIKey == "" {
+		if cfg.SMTP.Port == "" {
+			return fmt.Errorf("missing required fields for SMTP i.e port")
+		}
+		if cfg.SMTP.Username == "" {
+			return fmt.Errorf("missing required fields for SMTP i.e username")
+		}
+		if cfg.SMTP.Password == "" {
+			return fmt.Errorf("missing required fields for SMTP i.e password")
+		}
+	case RESEND:
+		if cfg.Resend.APIKey == "" {
 			return fmt.Errorf("API key is missing")
 		}
 	case AMAZON_SES:
-		if cfg.APIKey == "" || cfg.APISecret == "" || cfg.Region == "" {
-			return fmt.Errorf("missing required fields for Amazon SES i.e region, key, secret")
+		if cfg.SES.Key == "" {
+			return fmt.Errorf("API key is missing")
+		}
+		if cfg.SES.Secret == "" {
+			return fmt.Errorf("API secret is missing")
+		}
+		if cfg.SES.Region == "" {
+			return fmt.Errorf("region is missing")
 		}
 	}
 	return nil
