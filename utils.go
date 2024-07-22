@@ -2,11 +2,13 @@ package mailer
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	mail "github.com/xhit/go-simple-mail/v2"
@@ -163,4 +165,18 @@ func checkResponse(res *http.Response) error {
 		return newMailerError("Mailer API", res.StatusCode, meta)
 	}
 	return nil
+}
+
+func getBase64Content(path string) (string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	data, err := io.ReadAll(file)
+	if err != nil {
+		return "", err
+	}
+	return base64.StdEncoding.EncodeToString(data), err
 }

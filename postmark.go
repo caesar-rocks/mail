@@ -1,11 +1,8 @@
 package mailer
 
 import (
-	"encoding/base64"
-	"io"
 	"mime"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -23,9 +20,9 @@ type postmarkMailer struct {
 }
 
 type postAttachment struct {
-	Name        string `json:"Name"`
-	Content     string `json:"Content"`
-	ContentType string `json:"ContentType"`
+	Name        string
+	Content     string
+	ContentType string
 }
 
 func newPostmark(params PostmarkCfg) MailerClient {
@@ -76,18 +73,4 @@ func (m *postmarkMailer) Send(msg Mail) error {
 
 func (m *postmarkMailer) Close() {
 	m.client.CloseIdleConnections()
-}
-
-func getBase64Content(path string) (string, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return "", err
-	}
-	defer file.Close()
-
-	data, err := io.ReadAll(file)
-	if err != nil {
-		return "", err
-	}
-	return base64.StdEncoding.EncodeToString(data), err
 }
