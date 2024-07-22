@@ -6,6 +6,7 @@ const (
 	SMTP       APIServiceType = "smtp"
 	AMAZON_SES APIServiceType = "amazon-ses"
 	RESEND     APIServiceType = "resend"
+	POSTMARK   APIServiceType = "postmark"
 )
 
 type Attachment struct {
@@ -32,6 +33,8 @@ type Mail struct {
 	Bcc string
 	// ReplyTo is the email address to reply to.
 	ReplyTo string
+	// Headers is a string of headers.
+	Headers map[string]string
 	// Attachments is an array of attachments.
 	Attachments []Attachment
 }
@@ -51,6 +54,9 @@ type MailCfg struct {
 
 	// The configuration for the Resend service.
 	Resend ResendCfg
+
+	// The configuration for the Postmark service
+	Postmark PostmarkCfg
 
 	// APIService is the service to use for sending emails.
 	APIService APIServiceType
